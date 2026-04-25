@@ -4,21 +4,13 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
 </head>
 
-<body>
-
-<!-- スタートボタン -->
-<button id="startButton"
-style="position: absolute; z-index: 2; top: 40%; left: 50%; transform: translate(-50%, -50%);
-padding: 15px 25px; font-size: 18px; background: #88c0a8; border: none; border-radius: 10px;">
-カメラを起動
-</button>
+<body style="margin:0; overflow:hidden;">
 
 <a-scene
-mindar-image="imageTargetSrc: targets.mind;"
-color-space="sRGB"
-renderer="colorManagement: true;"
-vr-mode-ui="enabled: false"
-device-orientation-permission-ui="enabled: true"
+  mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+  color-space="sRGB"
+  renderer="colorManagement: true;"
+  vr-mode-ui="enabled: false"
 >
 
 <a-assets>
@@ -28,8 +20,6 @@ device-orientation-permission-ui="enabled: true"
 <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
 <a-entity mindar-image-target="targetIndex: 0">
-
-  <!-- フレーム -->
   <a-plane
     src="#frame"
     position="0 0 0"
@@ -37,17 +27,9 @@ device-orientation-permission-ui="enabled: true"
     height="2"
     material="shader: flat; transparent: true; alphaTest: 0.01">
   </a-plane>
-
 </a-entity>
 
 </a-scene>
-
-<script>
-document.querySelector("#startButton").addEventListener("click", function() {
-  document.querySelector("a-scene").components["mindar-image"].start();
-  this.style.display = "none";
-});
-</script>
 
 </body>
 </html>
