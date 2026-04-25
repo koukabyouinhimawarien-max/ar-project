@@ -1,50 +1,28 @@
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: black;
-      width: 100%;
-      height: 100%;
-    }
-
-    video {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      top: 0;
-      left: 0;
-      z-index: 1;
-    }
-
-    #frame {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      top: 0;
-      left: 0;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    #shotButton {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      border: 6px solid white;
-      background: rgba(255,255,255,0.7);
-    }
-  </style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+html, body { margin:0; padding:0; overflow:hidden; background:black; width:100%; height:100%; }
+video { position:fixed; width:100%; height:100%; object-fit:cover; top:0; left:0; z-index:1; }
+#frame { position:fixed; width:100%; height:100%; object-fit:contain; top:0; left:0; z-index:2; pointer-events:none; }
+#shotButton {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+  z-index:3; width:76px; height:76px; border-radius:50%;
+  border:6px solid white; background:rgba(255,255,255,0.7);
+}
+#preview {
+  display:none; position:fixed; inset:0; z-index:10;
+  background:rgba(0,0,0,0.9); text-align:center;
+}
+#preview img { max-width:100%; max-height:85%; margin-top:20px; }
+#closeBtn {
+  position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+  font-size:18px; padding:12px 22px; border-radius:10px; border:none;
+}
+#guide {
+  color:white; font-size:16px; margin-top:8px;
+}
+</style>
 </head>
 
 <body>
@@ -55,12 +33,21 @@
 
 <canvas id="canvas" style="display:none;"></canvas>
 
+<div id="preview">
+  <img id="resultImage">
+  <div id="guide">画像を長押しして「写真に保存」してください</div>
+  <button id="closeBtn">戻る</button>
+</div>
+
 <script>
 const video = document.getElementById("camera");
 const frame = document.getElementById("frame");
 const button = document.getElementById("shotButton");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const preview = document.getElementById("preview");
+const resultImage = document.getElementById("resultImage");
+const closeBtn = document.getElementById("closeBtn");
 
 navigator.mediaDevices.getUserMedia({
   video: { facingMode: "environment" },
@@ -69,7 +56,7 @@ navigator.mediaDevices.getUserMedia({
 .then(stream => {
   video.srcObject = stream;
 })
-.catch(error => {
+.catch(() => {
   alert("カメラを起動できませんでした。カメラ許可を確認してください。");
 });
 
@@ -83,12 +70,12 @@ button.addEventListener("click", () => {
   ctx.drawImage(video, 0, 0, width, height);
   ctx.drawImage(frame, 0, 0, width, height);
 
-  const image = canvas.toDataURL("image/png");
+  resultImage.src = canvas.toDataURL("image/png");
+  preview.style.display = "block";
+});
 
-  const link = document.createElement("a");
-  link.href = image;
-  link.download = "natsumatsuri-photo.png";
-  link.click();
+closeBtn.addEventListener("click", () => {
+  preview.style.display = "none";
 });
 </script>
 
