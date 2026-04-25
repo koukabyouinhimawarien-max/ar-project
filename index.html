@@ -31,6 +31,19 @@
       z-index: 2;
       pointer-events: none;
     }
+
+    #shotButton {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      border: 6px solid white;
+      background: rgba(255,255,255,0.7);
+    }
   </style>
 </head>
 
@@ -38,23 +51,45 @@
 
 <video id="camera" autoplay playsinline muted></video>
 <img id="frame" src="frame.png">
+<button id="shotButton"></button>
+
+<canvas id="canvas" style="display:none;"></canvas>
 
 <script>
-  const video = document.getElementById("camera");
+const video = document.getElementById("camera");
+const frame = document.getElementById("frame");
+const button = document.getElementById("shotButton");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-  navigator.mediaDevices.getUserMedia({
-    video: {
-      facingMode: "environment"
-    },
-    audio: false
-  })
-  .then(stream => {
-    video.srcObject = stream;
-  })
-  .catch(error => {
-    alert("カメラを起動できませんでした。カメラ許可を確認してください。");
-    console.error(error);
-  });
+navigator.mediaDevices.getUserMedia({
+  video: { facingMode: "environment" },
+  audio: false
+})
+.then(stream => {
+  video.srcObject = stream;
+})
+.catch(error => {
+  alert("カメラを起動できませんでした。カメラ許可を確認してください。");
+});
+
+button.addEventListener("click", () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  canvas.width = width;
+  canvas.height = height;
+
+  ctx.drawImage(video, 0, 0, width, height);
+  ctx.drawImage(frame, 0, 0, width, height);
+
+  const image = canvas.toDataURL("image/png");
+
+  const link = document.createElement("a");
+  link.href = image;
+  link.download = "natsumatsuri-photo.png";
+  link.click();
+});
 </script>
 
 </body>
