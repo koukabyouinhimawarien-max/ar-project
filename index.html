@@ -2,30 +2,59 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html, body { margin:0; padding:0; overflow:hidden; background:black; }
-video { position:fixed; width:100%; height:100%; object-fit:cover; z-index:1; }
-#frame { position:fixed; width:100%; height:100%; object-fit:contain; z-index:2; pointer-events:none; }
+html, body { margin:0; padding:0; overflow:hidden; background:black; width:100%; height:100%; }
 
-#shotButton {
-  position:fixed; bottom:30px; left:50%; transform:translateX(-50%);
-  z-index:3; width:80px; height:80px;
-  border-radius:50%; border:6px solid white;
-  background:rgba(255,255,255,0.7);
+video {
+  position:fixed; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:1;
 }
 
-#saveBtn {
-  position:fixed; bottom:120px; left:50%; transform:translateX(-50%);
-  z-index:4; padding:12px 20px;
-  font-size:16px; border-radius:10px; border:none;
+#frame {
+  position:fixed; inset:0;
+  width:100%; height:100%;
+  object-fit:contain;
+  z-index:2;
+  pointer-events:none;
+}
+
+#shotButton {
+  position:fixed;
+  bottom:30px; left:50%;
+  transform:translateX(-50%);
+  z-index:3;
+  width:82px; height:82px;
+  border-radius:50%;
+  border:7px solid white;
+  background:rgba(255,255,255,0.65);
+}
+
+#preview {
   display:none;
+  position:fixed; inset:0;
+  background:black;
+  z-index:10;
+  text-align:center;
 }
 
 #resultImage {
-  position:fixed;
-  top:10px; left:10px;
-  width:120px;
-  border:2px solid white;
-  z-index:5;
+  max-width:100%;
+  max-height:82%;
+  margin-top:10px;
+}
+
+#message {
+  color:white;
+  font-size:16px;
+  margin:8px;
+}
+
+#backButton {
+  font-size:18px;
+  padding:12px 24px;
+  border-radius:12px;
+  border:none;
 }
 </style>
 </head>
@@ -35,29 +64,37 @@ video { position:fixed; width:100%; height:100%; object-fit:cover; z-index:1; }
 <video id="camera" autoplay playsinline muted></video>
 <img id="frame" src="frame.png">
 <button id="shotButton"></button>
-<button id="saveBtn">保存</button>
 
 <canvas id="canvas" style="display:none;"></canvas>
-<img id="resultImage">
+
+<div id="preview">
+  <img id="resultImage">
+  <div id="message">画像を長押しして保存してください</div>
+  <button id="backButton">もう一度撮る</button>
+</div>
 
 <script>
 const video = document.getElementById("camera");
 const frame = document.getElementById("frame");
-const shotBtn = document.getElementById("shotButton");
-const saveBtn = document.getElementById("saveBtn");
+const shotButton = document.getElementById("shotButton");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const preview = document.getElementById("preview");
 const resultImage = document.getElementById("resultImage");
+const backButton = document.getElementById("backButton");
 
 navigator.mediaDevices.getUserMedia({
   video: { facingMode: "environment" },
   audio: false
 })
-.then(stream => video.srcObject = stream);
+.then(stream => {
+  video.srcObject = stream;
+})
+.catch(() => {
+  alert("カメラを起動できませんでした。カメラ許可を確認してください。");
+});
 
-let imageData = "";
-
-shotBtn.addEventListener("click", () => {
+shotButton.addEventListener("click", () => {
   const w = window.innerWidth;
   const h = window.innerHeight;
 
@@ -67,17 +104,12 @@ shotBtn.addEventListener("click", () => {
   ctx.drawImage(video, 0, 0, w, h);
   ctx.drawImage(frame, 0, 0, w, h);
 
-  imageData = canvas.toDataURL("image/png");
-  resultImage.src = imageData;
-
-  saveBtn.style.display = "block";
+  resultImage.src = canvas.toDataURL("image/png");
+  preview.style.display = "block";
 });
 
-saveBtn.addEventListener("click", () => {
-  const a = document.createElement("a");
-  a.href = imageData;
-  a.download = "photo.png";
-  a.click();
+backButton.addEventListener("click", () => {
+  preview.style.display = "none";
 });
 </script>
 
