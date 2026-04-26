@@ -126,16 +126,8 @@ function drawContain(ctx, img, canvasW, canvasH) {
 shotButton.addEventListener("click", () => {
   if (!video.videoWidth) return;
 
-  const videoRatio = video.videoWidth / video.videoHeight;
-const screenRatio = window.innerWidth / window.innerHeight;
-
-if (screenRatio > videoRatio) {
-  canvas.height = window.innerHeight;
-  canvas.width = canvas.height * videoRatio;
-} else {
   canvas.width = window.innerWidth;
-  canvas.height = canvas.width / videoRatio;
-}
+  canvas.height = window.innerHeight;
 
   drawCover(ctx, video, canvas.width, canvas.height);
   drawContain(ctx, frame, canvas.width, canvas.height);
