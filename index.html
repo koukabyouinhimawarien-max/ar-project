@@ -2,7 +2,10 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html, body { margin:0; padding:0; overflow:hidden; background:black; width:100%; height:100%; }
+html, body {
+  margin:0; padding:0; overflow:hidden;
+  background:black; width:100%; height:100%;
+}
 
 video {
   position:fixed; inset:0;
@@ -83,6 +86,7 @@ const preview = document.getElementById("preview");
 const resultImage = document.getElementById("resultImage");
 const backButton = document.getElementById("backButton");
 
+// カメラ起動
 navigator.mediaDevices.getUserMedia({
   video: { facingMode: "environment" },
   audio: false
@@ -94,20 +98,26 @@ navigator.mediaDevices.getUserMedia({
   alert("カメラを起動できませんでした。カメラ許可を確認してください。");
 });
 
+// 撮影（歪み修正済み）
 shotButton.addEventListener("click", () => {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
 
-  canvas.width = w;
-  canvas.height = h;
+  // カメラ準備前対策
+  if (!video.videoWidth) return;
 
-  ctx.drawImage(video, 0, 0, w, h);
-  ctx.drawImage(frame, 0, 0, w, h);
+  const videoWidth = video.videoWidth;
+  const videoHeight = video.videoHeight;
+
+  canvas.width = videoWidth;
+  canvas.height = videoHeight;
+
+  ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+  ctx.drawImage(frame, 0, 0, videoWidth, videoHeight);
 
   resultImage.src = canvas.toDataURL("image/png");
   preview.style.display = "block";
 });
 
+// 戻る
 backButton.addEventListener("click", () => {
   preview.style.display = "none";
 });
